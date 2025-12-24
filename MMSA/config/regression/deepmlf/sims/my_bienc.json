@@ -1,6 +1,6 @@
 {
   "datasetCommonParams": {
-    "dataset_root_dir": "/home/alex/Downloads/MSA-Datasets",
+    "dataset_root_dir": "/leonardo_work/EUHPC_A04_051/alexfil/MSA-Datasets",
     "mosi": {
       "aligned": {
         "featurePath": "mosi/Processed/aligned_50.pkl",
@@ -51,7 +51,7 @@
     },
     "sims": {
       "unaligned": {
-        "featurePath": "CH-SIMS/Processed/unaligned_39.pkl",
+        "featurePath": "CH-SIMS/unaligned_39.pkl",
         "seq_lens": [39, 400, 55],
         "feature_dims": [768, 33, 709],
         "train_samples": 1368,
