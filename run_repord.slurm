@@ -31,8 +31,8 @@ python experiments/regression/mult_base.py \
   -m msalm \
   -d sims \
   -g 0 \
-  --exp-name deepmlf-reprod-sims \
+  --exp-name deepmlf-with-sa \
   -c MMSA/config/regression/deepmlf/sims/my_base_best.json \
-  --res-save-dir MMSA/results/deepmlf-reprod-sims \
+  --res-save-dir MMSA/results/deepmlf-with-sa \
   -n 2 \
   -s 1990 -s 1991 -s 1992 -s 1993 -s 1994

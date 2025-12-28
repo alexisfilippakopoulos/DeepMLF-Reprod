@@ -8,7 +8,7 @@ from typing import Optional
 import torch.distributions as D
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 from MMSA.models.singleTask.MMGPT import (AV_Enc,
-                                          MultiheadCrossAttention,
+                                          MultiheadCrossAttention, MultiheadSelfAttention,
                                           LoRA_MLP, LayerNorm, MLP)
 
 ###################################################################################################
@@ -312,6 +312,7 @@ class MMBlock(nn.Module):
                 self.kdim,  # multimodal dimension, k, v
                 config.dropout,
             )
+            self.ln_sa = LayerNorm(config.n_embd, config.bias)
             if config.use_lora:
                 self.mlp = LoRA_MLP(config)
             else:
@@ -359,7 +360,19 @@ class MMBlock(nn.Module):
 
         # combined cross-attention
         self.combine = config.get("combine", False)
-        
+        self.self_attn = MultiheadSelfAttention(
+            config.n_head,
+            config.n_embd,
+            0.1)
+        self.alpha_sa = nn.Parameter(torch.zeros(1))
+        self.gate_sa = nn.Sigmoid()
+        """self.av_ffn = nn.Sequential(
+            nn.Linear(self.kdim, self.kdim * 2),
+            nn.GELU(),
+            nn.Dropout(0.2),
+            nn.Linear(self.kdim * 2, self.kdim)
+         )"""
+
     def forward(self, x_q, x_kv, x_prev=None):
         """
         x_q: the text-modality queries [B, L, D]
@@ -370,6 +383,8 @@ class MMBlock(nn.Module):
         # x_q, cache = x_q[0], x_q[1]
         x_q = x_q[0]
         norm_x_q = self.ln_1(x_q)
+        # remove it after ffn exp
+        # x_kv = self.av_ffn(x_kv)
         # cross attention with the context x_k, x_v
         # x_ca, _ = self.attn(norm_x_q, x_k, x_v)
         x_ca = self.attn(norm_x_q, x_kv)
@@ -382,6 +397,7 @@ class MMBlock(nn.Module):
             x_comb = torch.cat((x_prev, x), dim=1)
             # PAPER: gated cross-attention version
             x = x_comb + self.gate_2(self.alpha_2) * self.mlp(self.ln_2(x_comb))
+            x = x + self.gate_sa(self.alpha_sa) * self.self_attn(self.ln_sa(x))
             # ablation: no-gate version
             # x = x_comb + self.mlp(self.ln_2(x_comb))
             # x = x_comb + self.mlp(self.ln_2(x_comb))
