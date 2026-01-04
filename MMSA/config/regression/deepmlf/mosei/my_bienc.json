@@ -1,6 +1,6 @@
 {
   "datasetCommonParams": {
-    "dataset_root_dir": "/home/alex/Downloads/MSA-Datasets",
+    "dataset_root_dir": "/leonardo_work/EUHPC_A04_051/alexfil/MSA-Datasets",
     "mosi": {
       "aligned": {
         "featurePath": "mosi/Processed/aligned_50.pkl",
@@ -85,7 +85,7 @@
         "hfPath": false,
         "max_token_len": 50,
         "pad_token": "<|endoftext|>",
-        "lm": "gpt2",
+        "lm": "/leonardo_work/EUHPC_A04_051/alexfil/gpt2-large",
         "gpt": {
           "mm_dropout": 0.1,
           "mm_layer": [3, 5, 7, 9, 11],

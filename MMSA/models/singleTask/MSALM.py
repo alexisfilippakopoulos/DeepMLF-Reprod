@@ -312,7 +312,7 @@ class MMBlock(nn.Module):
                 self.kdim,  # multimodal dimension, k, v
                 config.dropout,
             )
-            self.ln_sa = LayerNorm(config.n_embd, config.bias)
+            #self.ln_sa = LayerNorm(config.n_embd, config.bias)
             if config.use_lora:
                 self.mlp = LoRA_MLP(config)
             else:
@@ -360,12 +360,12 @@ class MMBlock(nn.Module):
 
         # combined cross-attention
         self.combine = config.get("combine", False)
-        self.self_attn = MultiheadSelfAttention(
-            config.n_head,
-            config.n_embd,
-            0.1)
-        self.alpha_sa = nn.Parameter(torch.zeros(1))
-        self.gate_sa = nn.Sigmoid()
+        #self.self_attn = MultiheadSelfAttention(
+            #config.n_head,
+            #config.n_embd,
+            #0.1)
+        #self.alpha_sa = nn.Parameter(torch.zeros(1))
+        #self.gate_sa = nn.Sigmoid()
         """self.av_ffn = nn.Sequential(
             nn.Linear(self.kdim, self.kdim * 2),
             nn.GELU(),
@@ -397,7 +397,7 @@ class MMBlock(nn.Module):
             x_comb = torch.cat((x_prev, x), dim=1)
             # PAPER: gated cross-attention version
             x = x_comb + self.gate_2(self.alpha_2) * self.mlp(self.ln_2(x_comb))
-            x = x + self.gate_sa(self.alpha_sa) * self.self_attn(self.ln_sa(x))
+            #x = x + self.gate_sa(self.alpha_sa) * self.self_attn(self.ln_sa(x))
             # ablation: no-gate version
             # x = x_comb + self.mlp(self.ln_2(x_comb))
             # x = x_comb + self.mlp(self.ln_2(x_comb))
